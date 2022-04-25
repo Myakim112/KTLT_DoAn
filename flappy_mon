@@ -1,3 +1,31 @@
+import sys, pygame, random
+
+pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
+pygame.init()
+score = 0
+idx=0
+
+def create_pipe():
+    random_pipe_pos = random.choice(pipe_height)
+    bottom_pipe = pipe_surface.get_rect(midtop=(400, random_pipe_pos))
+    top_pipe = pipe_surface.get_rect(midtop=(400, random_pipe_pos - 580))
+    return bottom_pipe, top_pipe
+    
+def pipe_movement(pipes):
+    global score, idx
+    for pipe in pipes:
+        pipe.centerx -= 3
+    if len(pipes)!=0:
+        if (pipe_list[idx].centerx + 48) == 100 and game_active:
+            score += 1
+            score_sound.play()
+            idx+=2
+    return pipes
+
+def draw_pipe(pipes):
+    for pipe in pipes:
+        WIN.blit(pipe_surface, pipe)
+
 def score_display(game_state):
     if game_state == 'main game':
         score_surface = game_font.render(str(int(score)), True, (255, 255, 255))
@@ -18,9 +46,30 @@ def update_score(score, high_score):
         high_score = score
     return high_score
 
+# đặt size cho cửa sổ
+WIN = pygame.display.set_mode((360, 640))
+
+# đặt tên cửa sổ
+pygame.display.set_caption("FLAPPY MON")
+
+# xác định số frame mỗi giây
+FPS = 60  # tốc dộ bình thường của game
+clock = pygame.time.Clock()
+
+
+
 # điểm
 score = 0
 high_score = 0
+
+# thêm ảnh nền
+background = pygame.image.load('image/background.png').convert()
+
+# thêm ống
+pipe_surface = pygame.image.load('image/column.png').convert()
+pipe_list = []
+pipe_height = [i for i in range(300, 500)]
+
 while True:  # tạo loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
